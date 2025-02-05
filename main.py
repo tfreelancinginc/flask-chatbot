@@ -63,7 +63,8 @@ def chat():
             ]
         )
 
-         chatbot_reply = response["choices"][0]["message"]["content"]
+        
+        chatbot_reply = response["choices"][0]["message"]["content"]
         return jsonify({"response": chatbot_reply})
 
     except openai.error.OpenAIError as e:

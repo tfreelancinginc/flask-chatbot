@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
 import openai
 from flask_cors import CORS
+import os  # <-- To securely load API keys
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
 
-# Replace with your OpenAI API key
-openai.api_key = "MY API Key"
+# 🔹 Securely Load OpenAI API Key (Don't hardcode it)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # 🔹 Preload Techquila Freelancing Inc. Business Information
 business_info = """
@@ -63,8 +64,7 @@ def chat():
             ]
         )
 
-        
-        chatbot_reply = response["choices"][0]["message"]["content"]
+        chatbot_reply = response.choices[0].message.content  
         return jsonify({"response": chatbot_reply})
 
     except openai.error.OpenAIError as e:

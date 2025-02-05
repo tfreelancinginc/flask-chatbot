@@ -34,11 +34,12 @@ Techquila Freelancing Inc. specializes in:
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        data = request.json
-        user_message = data.get("message", "")
+        data = request.get_json()
 
-        if not user_message:
+        if not data or "message" not in data:
             return jsonify({"error": "No message provided"}), 400
+
+        user_message = data["message"]
 
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -62,10 +63,13 @@ def chat():
             ]
         )
 
-        return jsonify({"response": response["choices"][0]["message"]["content"]})
+         chatbot_reply = response["choices"][0]["message"]["content"]
+        return jsonify({"response": chatbot_reply})
 
+    except openai.error.OpenAIError as e:
+        return jsonify({"error": "OpenAI API Error: " + str(e)}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Server Error: " + str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
